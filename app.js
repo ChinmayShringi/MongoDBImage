@@ -7,22 +7,17 @@ const multer = require('multer');
 const GridFsStorage = require('multer-gridfs-storage');
 const Grid = require('gridfs-stream');
 const methodOverride = require('method-override');
-
 const app = express();
 
-// Middleware
 app.use(bodyParser.json());
 app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
 
-
 const mongo = 'mongodb://localhost:27017/mongoupload';
-
 
 const conn = mongoose.createConnection(mongo, { useNewUrlParser: true } );
 
 let gfs;
-
 conn.once('open', () => {
   // Init stream
   gfs = Grid(conn.db, mongoose.mongo);
@@ -41,7 +36,7 @@ const storage = new GridFsStorage({
         const filename = buf.toString('hex') + path.extname(file.originalname);
         const fileInfo = {
           filename: filename,
-          bucketName: 'uploads' //bucket name should match the collection name @line29
+          bucketName: 'uploads' //bucket name should match the collection name @line24
         };
         resolve(fileInfo);
       });
@@ -93,8 +88,7 @@ app.get('/files', (req, res) => {
   });
 });
 
-// @route GET /files/:filename
-// @desc  Display single file object
+// Display single file object
 app.get('/files/:filename', (req, res) => {
   gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
     // Check if file
@@ -108,8 +102,7 @@ app.get('/files/:filename', (req, res) => {
   });
 });
 
-// @route GET /image/:filename
-// @desc Display Image
+// Display Image
 app.get('/image/:filename', (req, res) => {
   gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
     // Check if file
